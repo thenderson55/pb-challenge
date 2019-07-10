@@ -10,6 +10,7 @@ const PlayerList = (props) => {
   // let playerList;
   const [user, setUser] = useState({ id: 1, admin: false, votes: []
   })
+  const [voteCount, setVoteCount] = useState(0)
   console.log(user)
 
   const Player = styled.li`
@@ -54,29 +55,39 @@ const PlayerList = (props) => {
     /* justify-content: center; */
   `;
 
-  const selectPlayer = (nickname) => {
+  const selectPlayer = (nickname, country) => {
     console.log(nickname)
-    if(user.votes.includes(nickname) ){
+    if(user.votes.some(player => player.nickname == nickname)){
       const checkToRemove = window.confirm('You have already voted for this player, do you want to remove him/her from your voting selection?')
       if(checkToRemove){
-        return user.votes.splice(user.votes.findIndex(name => name === nickname),1);
+        user.votes.splice(user.votes.findIndex(player => player.nickname == nickname),1);
+        setVoteCount(user.votes.length)
+        return
       }
+      return
     }
+    // if(user.votes.length == 3 && user.votes.every(player => player.country == country)){
+    //   alert('doiff')
+    // }
+    
     if(user.votes.length == 3 ){
       alert("You have already voted for three people")
       return;
     }   
-    user.votes.push(nickname)
+    user.votes.push({nickname: nickname, country: country})
+    setVoteCount(user.votes.length)
     console.log(user)
   }
   
   const playerList = (
+    <>
+    <p>You have voted {voteCount} times.</p>
     <PlayerWrapper>
       {players &&
         players.map((player, i) => {
           if (player.country == props.region) {
             return (
-              <Player onClick={() => selectPlayer(player.nickname)} key={i}>
+              <Player onClick={() => selectPlayer(player.nickname, player.country)} key={i}>
                 <PlayerAvatar src={player.avatar}/>
                 <PlayerName>{player.nickname} <img src={wales} alt=""/></PlayerName>
                 <PlayerMessage>{player.message}</PlayerMessage>
@@ -85,6 +96,7 @@ const PlayerList = (props) => {
           }
         })}
     </PlayerWrapper>
+    </>
   );
   
   return (
