@@ -1,24 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useContext } from 'react';
 import './App.css';
+import {MyContext} from "./context/MyContext";
+import RegionSelection from  './components/RegionSelection'
+// import PlayerList from './components/PlayerList'
+import Button from './components/Button'
 
 function App() {
+  // const [state, setState] = useState({
+  //   user: "admin"
+  // })
+  const { user } = useContext(MyContext);
+
+  let endVoting;
+  if(user == "admin"){
+    endVoting = <Button>Stop Voting</Button>
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RegionSelection></RegionSelection>
+      {/* <PlayerList></PlayerList> */}
+      <p>You are logged in as: {user}</p>
+      {endVoting}
     </div>
   );
 }
