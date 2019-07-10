@@ -29,7 +29,7 @@ const PlayerList = (props) => {
     border-image: initial;
     border-radius: 50%;
     &:hover {
-      border-color: rgb(255, 125, 8);
+      border-color: ${() => votedList.length !== 3 ? "rgb(255, 125, 8)" : null};
     }
   `;
 
