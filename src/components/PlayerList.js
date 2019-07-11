@@ -10,7 +10,7 @@ const PlayerList = (props) => {
 
   const [user, setUser] = useState({ id: 1, admin: false, votes: []
   })
-  const [voteCount, setVoteCount] = useState(0)
+  const [voteCount, setVoteCount] = useState(3)
   const [votedList, setVotedList] = useState([])
 
   const Player = styled.li`
@@ -84,7 +84,7 @@ const PlayerList = (props) => {
       if(checkToRemove){
         user.votes.splice(user.votes.findIndex(player => player.nickname == nickname),1);
 
-        setVoteCount(user.votes.length)
+        setVoteCount(voteCount + 1)
 
         const newVotedList = votedList.filter(item => item !== index)
         setVotedList(newVotedList)
@@ -102,14 +102,14 @@ const PlayerList = (props) => {
     } 
 
     user.votes.push({nickname: nickname, country: country})
-    setVoteCount(user.votes.length)
+    setVoteCount(voteCount - 1)
     setVotedList([...votedList, index])
   }
   
 
   const playerList = (
     <>
-    <p>You have voted {voteCount} times.</p>
+    <p>You have {voteCount} votes remaining.</p>
     <PlayerWrapper>
       {players &&
         players.map((player, i) => {
