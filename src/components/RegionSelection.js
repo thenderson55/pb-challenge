@@ -20,7 +20,7 @@ const RegionHeader = styled.span`
   font-weight: 700;
 `;
 
-const RegionSelection = () => {
+const RegionSelection = (props) => {
   // const [state, dispatch] = useReducer(playersReducer, initialState)
   const [region, setRegion] = useState('hk')
 
@@ -42,7 +42,7 @@ const RegionSelection = () => {
         <Button onClick={clickHandler} value="sea">South East Asia</Button>
         <Button onClick={clickHandler} value="jp">Japan</Button>
       </Regions>
-      <PlayerList region={region}></PlayerList> 
+      <PlayerList user={props.user} region={region}></PlayerList> 
     </div>
 
   )
