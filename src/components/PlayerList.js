@@ -11,6 +11,7 @@ const PlayerList = (props) => {
   const [user, setUser] = useState({ id: 1, admin: false, votes: []
   })
   const [voteCount, setVoteCount] = useState(3)
+  // List used to change styling according to player index
   const [votedList, setVotedList] = useState([])
 
   const Player = styled.li`
@@ -78,32 +79,38 @@ const PlayerList = (props) => {
   `;
 
   const selectPlayer = (nickname, country, index) => {
-    console.log(nickname)
+
+    // Check that they are only voting for one region
+    if(user.votes.some(player => player.country !== props.region)){
+      alert('You can only vote for one region')
+      return
+    }
+
+    // Check they haven't already voted for the player
     if(user.votes.some(player => player.nickname == nickname)){
       const checkToRemove = window.confirm('You have already voted for this player, do you want to remove him/her from your voting selection?')
+      // Remove vote if they click on same player twice
       if(checkToRemove){
         user.votes.splice(user.votes.findIndex(player => player.nickname == nickname),1);
-
         setVoteCount(voteCount + 1)
-
         const newVotedList = votedList.filter(item => item !== index)
         setVotedList(newVotedList)
         return
       }
       return
     }
-    // if(user.votes.length == 3 && user.votes.every(player => player.country == country)){
-    //   alert('doiff')
-    // }
-    
+   
+    // Check they don't have more than three votes
     if(user.votes.length == 3 ){
       alert("You have already voted for three people")
       return;
     } 
 
+    // Add voted player to votes array
     user.votes.push({nickname: nickname, country: country})
     setVoteCount(voteCount - 1)
     setVotedList([...votedList, index])
+    
   }
   
 
