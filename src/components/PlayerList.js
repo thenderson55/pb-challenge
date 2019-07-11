@@ -1,7 +1,9 @@
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import playersContext from "../context/playersContext";
-import wales from "../images/wales.png"
+import hk from "../images/hk.png"
+import jp from "../images/jp.png"
+import tw from "../images/tw.png"
 
 const PlayerList = (props) => {
   const { players } = useContext(playersContext);
@@ -16,11 +18,16 @@ const PlayerList = (props) => {
     margin-top: 20px;
     padding: 5px;
     list-style-type: none;
+    font-family: Noto Sans Japanese,Noto Sans,sans-serif;
+    background-color: #2f353d;
+    color: #ededed; 
   `
   const PlayerAvatar = styled.img`
     margin-bottom: 10px;
     width: 80px;
     height: 80px;
+    z-index: 1;
+
     position: relative;
     overflow: hidden;
     border-width: 5px;
@@ -35,6 +42,20 @@ const PlayerList = (props) => {
 
   const VotedAvatar = styled(PlayerAvatar)`
     border-color: rgb(255, 125, 8);
+  `;
+
+  const Percentage = styled.div`
+    position: sticky;
+    margin: auto;
+    width: 20px;
+    z-index: 2;
+    transform: translateY(10px);
+    font-size: 10px;
+    /* margin-bottom: -15px; */
+    background-color: rgb(216,216,216);
+    color: black;
+    padding: 1px 5px;
+    border-radius: 3px;
   `;
 
   const PlayerName = styled.p`
@@ -96,8 +117,8 @@ const PlayerList = (props) => {
             if(votedList.includes(i)){
               return (  
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
-                  <VotedAvatar src={player.avatar}/>
-                  <PlayerName>{player.nickname} <img src={wales} alt=""/></PlayerName>
+                  <VotedAvatar src={player.avatarUrl}/>
+                  <PlayerName>{player.nickname} <img src={hk} alt=""/></PlayerName>
                   <PlayerMessage>{player.message}</PlayerMessage>
                 </Player>
               );
@@ -105,8 +126,9 @@ const PlayerList = (props) => {
             else {
               return (
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
-                  <PlayerAvatar src={player.avatar}/>
-                  <PlayerName>{player.nickname} <img src={wales} alt=""/></PlayerName>
+                  {/* <Percentage>22</Percentage> */}
+                  <PlayerAvatar src={player.avatarUrl}/>
+                  <PlayerName>{player.nickname} <img src={tw} alt=""/></PlayerName>
                   <PlayerMessage>{player.message}</PlayerMessage>
                 </Player>
               );

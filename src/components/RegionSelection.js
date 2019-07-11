@@ -13,12 +13,16 @@ const Regions = styled.div`
   flex-direction: row;
   justify-content: space-evenly;
   text-align: center;
-  padding: 10px; 
 `
+
+const RegionHeader = styled.span`
+  font-size: 30px;
+  font-weight: 700;
+`;
 
 const RegionSelection = () => {
   // const [state, dispatch] = useReducer(playersReducer, initialState)
-  const [region, setRegion] = useState('jp')
+  const [region, setRegion] = useState('hk')
 
 
   function clickHandler (e) {
@@ -30,6 +34,8 @@ const RegionSelection = () => {
 
   return (
     <div>
+      <RegionHeader>Vote for players to represent your region's team</RegionHeader>
+      <p>Select your region to browse players. <br/> NOTE : You may only vote for one region.</p>
       <Regions>
         <Button onClick={clickHandler} value="tw">Taiwan</Button>
         <Button onClick={clickHandler} value="hk" className="inactive">Hong Kong</Button>

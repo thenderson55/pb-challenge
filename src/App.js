@@ -2,14 +2,18 @@ import React, { useState, useContext } from 'react';
 import './App.css';
 import {MyContext} from "./context/MyContext";
 import RegionSelection from  './components/RegionSelection'
-// import PlayerList from './components/PlayerList'
 import Button from './components/Button'
+import styled from 'styled-components'
+
 
 function App() {
   // const [state, setState] = useState({
   //   user: "admin"
   // })
   const { user } = useContext(MyContext);
+  const Home = styled.div`
+    padding: 20px;
+  `;
 
   let endVoting;
   if(user == "admin"){
@@ -17,12 +21,11 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <Home className="App">
       <RegionSelection></RegionSelection>
-      {/* <PlayerList></PlayerList> */}
       <p>You are logged in as: {user}</p>
       {endVoting}
-    </div>
+    </Home>
   );
 }
 
