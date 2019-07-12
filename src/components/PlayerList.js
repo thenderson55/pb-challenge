@@ -1,13 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import playersContext from "../context/playersContext";
+import { connect } from "react-redux";
 import Button from './Button'
+import { addPlayer } from '../store/actions'
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
 import tw from "../images/tw.png"
 
 const PlayerList = (props) => {
-  const { players } = useContext(playersContext);
+  const { players, region } = props
   const hkPlayers = []
   const jpPlayers = []
   const twPlayers = []
@@ -137,12 +138,14 @@ const PlayerList = (props) => {
       return;
     } 
     // Check that they are only voting for one region
-    if(user.votes.some(player => player.country !== props.region)){
+    if(user.votes.some(player => player.country !== region)){
       alert('You can only vote for one region')
       return
     }
     // Add voted player to votes array
-    user.votes.push({nickname: nickname, country: country})
+    const a = user.votes.push({nickname: nickname, country: country})
+    const b = {nickame: 'bb'}
+    props.addPlayer(b)
     setVoteCount(voteCount - 1)
     setVotedList([...votedList, index]) 
   }
@@ -174,7 +177,7 @@ const PlayerList = (props) => {
     <PlayerWrapper>
       {players &&
         players.map((player, i) => {
-          if (player.country == props.region) {
+          if (player.country == region) {
             if(votedList.includes(i)){
               return (  
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>                    
@@ -219,4 +222,21 @@ const PlayerList = (props) => {
   );
 };
 
-export default PlayerList;
+const mapStateToProps = state => {
+  console.log(state)
+  return {
+    players: state.players,
+    region: state.region
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    addPlayer: (player) => dispatch(addPlayer(player))
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PlayerList);
