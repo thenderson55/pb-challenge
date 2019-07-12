@@ -5,22 +5,25 @@ import styled from "styled-components";
 import PlayerList from "./PlayerList";
 
 
-const Regions = styled.div`
-  display: flex;
-  margin: auto;
-  width: 50%;
-  flex-direction: row;
-  justify-content: space-evenly;
-  text-align: center;
-`;
-
-const RegionHeader = styled.span`
-  font-size: 30px;
-  font-weight: 700;
-`;
-
 const RegionSelection = props => {
-  const [{ region }, dispatch] = useStateValue();
+  const [{ region, endVoting }, dispatch] = useStateValue();
+
+  const Regions = styled.div`
+    display: flex;
+    margin: auto;
+    width: 50%;
+    flex-direction: row;
+    justify-content: space-evenly;
+    text-align: center;
+  `;
+
+  const RegionHeader = styled.span`
+    font-size: 30px;
+    font-weight: 700;
+    &::before{
+      content: "${() => endVoting ? 'Voting closed': 'Vote for players to represent your region'}"
+    }
+  `;
 
   function clickHandler(e) {
     dispatch({ type: "CHANGE_REGION", payload: e.target.value });
@@ -28,7 +31,7 @@ const RegionSelection = props => {
 
   return (
     <div style={{textAlign: 'center'}}>
-      <RegionHeader>Vote for players to represent your region's team</RegionHeader>
+      <RegionHeader></RegionHeader>
       <p>Select your region to browse players. <br /> NOTE : You may only vote for one region.</p>
       <Regions>
         <Button onClick={clickHandler} value="tw">Taiwan</Button>

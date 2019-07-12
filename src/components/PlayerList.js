@@ -4,10 +4,10 @@ import { useStateValue } from "../context/store";
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
 import tw from "../images/tw.png"
+import Button from './Button'
 
 const PlayerList = (props) => {
-  
-  const [{ user, players, voteCount, votedList  }, dispatch] = useStateValue()
+  const [{ user, players, voteCount, votedList, endVoting }, dispatch] = useStateValue()
   
   const hkPlayers = []
   const jpPlayers = []
@@ -21,8 +21,6 @@ const PlayerList = (props) => {
       twPlayers.push(player)
     }
   })
-  // List used to change styling according to player index
-  // const [votedList, setVotedList] = useState([])
 
   const Player = styled.li`
     width: 170px;
@@ -55,6 +53,8 @@ const PlayerList = (props) => {
     border-radius: 50%;
     &:hover {
       border-color: ${() => votedList.length !== 3 ? "rgb(255, 125, 8)" : null};
+      border-color: ${() => user.status === 'visitor' ? "rgb(71, 81, 93)" : null};
+      border-color: ${() => endVoting ? "rgb(71, 81, 93)" : null};
     }
   `;
 
@@ -102,6 +102,12 @@ const PlayerList = (props) => {
     flex-wrap: wrap;
   `;
 
+  const VotingButton = styled(Button)`
+    &::before{
+      content: "${() => endVoting ? 'Start voting': 'Stop voting'}";
+    }
+  `;  
+
   const selectPlayer =  (nickname, country, index) => {
     // Check they haven't already voted for the player
     if(user.votes.some(player => player.nickname === nickname)){
@@ -132,11 +138,33 @@ const PlayerList = (props) => {
     dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount - 1 }); 
     dispatch({ type: "UPDATE_VOTEDLIST", payload: [...votedList, index] });
   }
+
+
+  const changeUser = (e) => {
+    console.log(e.target.value)
+    dispatch({ type: "CHANGE_USER", payload: e.target.value })
+
+    // setUser({...user, status: e.target.value })
+  }
+
+  const stopVoting = () => {
+    dispatch({ type: "CHANGE_VOTING", payload: !endVoting })
+  }
+
+  let endVotingButton, percentages;
+  if(user.status === 'admin'){
+    endVotingButton = <VotingButton onClick={stopVoting}></VotingButton>
+  }
+  if(user.status === 'visitor' && endVoting){
+    percentages = <Percentage>23</Percentage> 
+  }
+  if(user.status === 'user' && endVoting){
+    percentages = <Percentage>23</Percentage> 
+  }
   
 
   const playerList = (
     <>
-    <p>You have {voteCount} votes remaining.</p>
     <PlayerWrapper>
       {players &&
         players.map((player, i) => {
@@ -174,7 +202,12 @@ const PlayerList = (props) => {
  
   return (
     <div>
+      <p>You are logged in as: {user.name}  {endVotingButton}</p>
+      <p>You have {voteCount} votes remaining.</p>
       {playerList}
+      <Button onClick={changeUser} value='visitor'>Visitor</Button>
+      <Button onClick={changeUser} value='user'>User</Button>
+      <Button onClick={changeUser} value='admin'>Admin</Button>
     </div> 
   );
 };
