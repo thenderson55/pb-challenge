@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { useStateValue } from "../context/Store";
+import { useStateValue } from "../context/store";
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
 import tw from "../images/tw.png"
 
 const PlayerList = (props) => {
   
-  const [{ user, players  }, dispatch] = useStateValue()
-  const [voteCount, setVoteCount] = useState(3)
+  const [{ user, players, voteCount, votedList  }, dispatch] = useStateValue()
   
   const hkPlayers = []
   const jpPlayers = []
@@ -23,7 +22,7 @@ const PlayerList = (props) => {
     }
   })
   // List used to change styling according to player index
-  const [votedList, setVotedList] = useState([])
+  // const [votedList, setVotedList] = useState([])
 
   const Player = styled.li`
     width: 170px;
@@ -105,20 +104,18 @@ const PlayerList = (props) => {
 
   const selectPlayer =  (nickname, country, index) => {
     // Check they haven't already voted for the player
-
     if(user.votes.some(player => player.nickname === nickname)){
       const checkToRemove = window.confirm('You have already voted for this player, do you want to remove him/her from your voting selection?')
       // Remove vote after confirmation
       if(checkToRemove){
         user.votes.splice(user.votes.findIndex(player => player.nickname === nickname),1);
-        setVoteCount(voteCount + 1)
+        dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount + 1 });
         const newVotedList = votedList.filter(item => item !== index)
-        setVotedList(newVotedList)
+        dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
         return
       }
       return
     } 
-    
     // Check they don't have more than three votes
     if(user.votes.length === 3 ){
       alert("You have already voted for three people")
@@ -130,11 +127,10 @@ const PlayerList = (props) => {
       return
     }
     // Add voted player to votes array
-    const updatedVotes = user.votes.push({nickname: nickname, country: country})
-    dispatch({ type: "ADD_PLAYER_VOTE", payload: updatedVotes });
-    setVoteCount(voteCount - 1)
-    setVotedList([...votedList, index]) 
-    console.log('jj', user.votes)
+    user.votes.push({nickname: nickname, country: country})
+    dispatch({ type: "ADD_PLAYER_VOTE", payload: user.votes });
+    dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount - 1 }); 
+    dispatch({ type: "UPDATE_VOTEDLIST", payload: [...votedList, index] });
   }
   
 

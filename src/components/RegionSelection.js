@@ -1,5 +1,5 @@
 import React from "react";
-import { useStateValue } from "../context/Store";
+import { useStateValue } from "../context/store";
 import Button from "./Button";
 import styled from "styled-components";
 import PlayerList from "./PlayerList";
