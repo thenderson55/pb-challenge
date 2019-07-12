@@ -10,7 +10,7 @@ import thunk from 'redux-thunk'
 const initialState = {
   user: {
     name: 'Bob',
-    status: 'admin',
+    status: 'user',
     votes: []
   },
   players: players,

@@ -8,26 +8,26 @@ import jp from "../images/jp.png"
 import tw from "../images/tw.png"
 
 const PlayerList = (props) => {
-  const { players, region } = props
-  const hkPlayers = []
-  const jpPlayers = []
-  const twPlayers = []
-  players.forEach(player => {
-    if(player.country == 'hk'){
-      hkPlayers.push(player)
-    }else if(player.country == 'jp'){
-      jpPlayers.push(player)
-    }else if(player.country == 'tw'){
-      twPlayers.push(player)
-    }
-  })
+  const { players, region, user, voteCount, endVoting, votedList } = props
+  // const hkPlayers = []
+  // const jpPlayers = []
+  // const twPlayers = []
+  // players.forEach(player => {
+  //   if(player.country == 'hk'){
+  //     hkPlayers.push(player)
+  //   }else if(player.country == 'jp'){
+  //     jpPlayers.push(player)
+  //   }else if(player.country == 'tw'){
+  //     twPlayers.push(player)
+  //   }
+  // })
   
-  const [user, setUser] = useState({ name: 'Bob', status: 'admin', votes: []})
-  const [voteCount, setVoteCount] = useState(3)
-  const [endVoting, setEndVoting] = useState(false)
+  // const [user, setUser] = useState({ name: 'Bob', status: 'admin', votes: []})
+  // const [voteCount, setVoteCount] = useState(3)
+  // const [endVoting, setEndVoting] = useState(false)
   
   // List used to change styling according to player index
-  const [votedList, setVotedList] = useState([])
+  // const [votedList, setVotedList] = useState([])
 
   const Player = styled.li`
     width: 170px;
@@ -116,6 +116,7 @@ const PlayerList = (props) => {
   `;
 
   const selectPlayer = (nickname, country, index) => {
+    console.log(user.votes)
     if(endVoting || user.status === 'visitor' || user.status === 'admin'){
       return
     }
@@ -125,9 +126,9 @@ const PlayerList = (props) => {
       // Remove vote after confirmation
       if(checkToRemove){
         user.votes.splice(user.votes.findIndex(player => player.nickname == nickname),1);
-        setVoteCount(voteCount + 1)
+        // setVoteCount(voteCount + 1)
         const newVotedList = votedList.filter(item => item !== index)
-        setVotedList(newVotedList)
+        // setVotedList(newVotedList)
         return
       }
       return
@@ -143,20 +144,19 @@ const PlayerList = (props) => {
       return
     }
     // Add voted player to votes array
-    const a = user.votes.push({nickname: nickname, country: country})
-    const b = {nickame: 'bb'}
-    props.addPlayer(b)
-    setVoteCount(voteCount - 1)
-    setVotedList([...votedList, index]) 
+    user.votes.push({nickname: nickname, country: country})
+    props.addPlayer(user.votes)
+    // setVoteCount(voteCount - 1)
+    // setVotedList([...votedList, index]) 
   }
 
   const changeUser = (e) => {
     console.log(e.target.value)
-    setUser({...user, status: e.target.value })
+    // setUser({...user, status: e.target.value })
   }
   const stopVoting = () => {
     console.log(endVoting)
-    setEndVoting(!endVoting)
+    // setEndVoting(!endVoting)
     console.log(endVoting)
   }
 
@@ -226,7 +226,11 @@ const mapStateToProps = state => {
   console.log(state)
   return {
     players: state.players,
-    region: state.region
+    region: state.region,
+    user: state.user,
+    voteCount: state.voteCount,
+    endVoting: state.endVoting,
+    votedList: state.votedList
   };
 };
 
