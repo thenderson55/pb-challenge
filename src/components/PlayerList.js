@@ -23,6 +23,7 @@ const PlayerList = (props) => {
   
   const [user, setUser] = useState({ name: 'Bob', status: 'admin', votes: []})
   const [voteCount, setVoteCount] = useState(3)
+  const [endVoting, setEndVoting] = useState(false)
   
   // List used to change styling according to player index
   const [votedList, setVotedList] = useState([])
@@ -58,6 +59,7 @@ const PlayerList = (props) => {
     border-radius: 50%;
     &:hover {
       border-color: ${() => votedList.length !== 3 ? "rgb(255, 125, 8)" : null};
+      border-color: ${() => user.status === 'visitor' ? "rgb(71, 81, 93)" : null};
     }
   `;
 
@@ -106,6 +108,9 @@ const PlayerList = (props) => {
   `;
 
   const selectPlayer = (nickname, country, index) => {
+    if(endVoting || user.status === 'visitor' || user.status === 'admin'){
+      return
+    }
     // Check they haven't already voted for the player
     if(user.votes.some(player => player.nickname == nickname)){
       const checkToRemove = window.confirm('You have already voted for this player, do you want to remove him/her from your voting selection?')
@@ -139,12 +144,21 @@ const PlayerList = (props) => {
     console.log(e.target.value)
     setUser({...user, status: e.target.value })
   }
+  const stopVoting = () => {
+    console.log(endVoting)
+    setEndVoting(!endVoting)
+    console.log(endVoting)
+  }
 
-  let endVoting;
+  let endVotingButton, percentages;
   if(user.status === 'admin'){
-    endVoting = <Button>Stop Voting</Button>
-  }else {
-    endVoting = null
+    endVotingButton = <Button onClick={stopVoting}>Stop Voting</Button>
+  }
+  if(user.status === 'visitor' && endVoting){
+    percentages = <Percentage>23</Percentage> 
+  }
+  if(user.status === 'user' && endVoting){
+    percentages = <Percentage>23</Percentage> 
   }
   
 
@@ -156,7 +170,8 @@ const PlayerList = (props) => {
           if (player.country == props.region) {
             if(votedList.includes(i)){
               return (  
-                <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
+                <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>                    
+                  {percentages}
                   <AvatarContainer>
                     <Selection>Your selection</Selection>
                     <PlayerAvatar style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
@@ -169,7 +184,7 @@ const PlayerList = (props) => {
             else {
               return (
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
-                  {/* <Percentage>22</Percentage> */}
+                  {percentages}
                   <AvatarContainer>
                     <Selection style={{ visibility: 'hidden'}}>Your selection</Selection>
                     <PlayerAvatar src={player.avatarUrl}/>
@@ -187,7 +202,7 @@ const PlayerList = (props) => {
  
   return (
     <div>
-      <p>You are logged in as: {user.name}  {endVoting}</p>
+      <p>You are logged in as: {user.name}  {endVotingButton}</p>
       <p>You have {voteCount} votes remaining.</p>
       {playerList}
       <Button onClick={changeUser} value='visitor'>Visitor</Button>
