@@ -60,6 +60,7 @@ const PlayerList = (props) => {
     &:hover {
       border-color: ${() => votedList.length !== 3 ? "rgb(255, 125, 8)" : null};
       border-color: ${() => user.status === 'visitor' ? "rgb(71, 81, 93)" : null};
+      border-color: ${() => endVoting ? "rgb(71, 81, 93)" : null};
     }
   `;
 
@@ -107,6 +108,12 @@ const PlayerList = (props) => {
     flex-wrap: wrap;
   `;
 
+  const VotingButton = styled(Button)`
+    &::before{
+      content: "${() => endVoting ? 'Start voting': 'Stop voting'}";
+    }
+  `;
+
   const selectPlayer = (nickname, country, index) => {
     if(endVoting || user.status === 'visitor' || user.status === 'admin'){
       return
@@ -152,7 +159,7 @@ const PlayerList = (props) => {
 
   let endVotingButton, percentages;
   if(user.status === 'admin'){
-    endVotingButton = <Button onClick={stopVoting}>Stop Voting</Button>
+    endVotingButton = <VotingButton onClick={stopVoting}></VotingButton>
   }
   if(user.status === 'visitor' && endVoting){
     percentages = <Percentage>23</Percentage> 
