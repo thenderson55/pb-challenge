@@ -7,8 +7,22 @@ import tw from "../images/tw.png"
 
 const PlayerList = (props) => {
   const { players } = useContext(playersContext);
+  const hkPlayers = []
+  const jpPlayers = []
+  const twPlayers = []
+  players.forEach(player => {
+    if(player.country == 'hk'){
+      hkPlayers.push(player)
+    }else if(player.country == 'jp'){
+      jpPlayers.push(player)
+    }else if(player.country == 'tw'){
+      twPlayers.push(player)
+    }
+  })
+  
   const [user, setUser] = useState({ id: 1, admin: false, votes: []})
   const [voteCount, setVoteCount] = useState(3)
+  
   // List used to change styling according to player index
   const [votedList, setVotedList] = useState([])
 
@@ -46,16 +60,12 @@ const PlayerList = (props) => {
     }
   `;
 
-  const VotedAvatar = styled(PlayerAvatar)`
-    border-color: rgb(255, 125, 8);
-  `;
-
   const Percentage = styled.div`
     position: sticky;
     margin: auto;
     width: 20px;
     z-index: 2;
-    transform: translateY(10px);
+    transform: translateY(20px);
     font-size: 10px;
     background-color: rgb(216,216,216);
     color: black;
@@ -137,7 +147,7 @@ const PlayerList = (props) => {
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
                   <AvatarContainer>
                     <Selection>Your selection</Selection>
-                    <VotedAvatar src={player.avatarUrl}/>
+                    <PlayerAvatar style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
                   </AvatarContainer>
                   <PlayerName>{player.nickname} <img src={hk} alt=""/></PlayerName>
                   <PlayerMessage>{player.message}</PlayerMessage>
@@ -162,7 +172,7 @@ const PlayerList = (props) => {
     </PlayerWrapper>
     </>
   );
-  
+ 
   return (
     <div>
       {playerList}
