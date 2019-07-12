@@ -1,28 +1,27 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import playersContext from "../context/playersContext";
+import { useStateValue } from "../context/Store";
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
 import tw from "../images/tw.png"
 
 const PlayerList = (props) => {
-  const { players } = useContext(playersContext);
+  
+  const [{ user, players  }, dispatch] = useStateValue()
+  const [voteCount, setVoteCount] = useState(3)
+  
   const hkPlayers = []
   const jpPlayers = []
   const twPlayers = []
   players.forEach(player => {
-    if(player.country == 'hk'){
+    if(player.country === 'hk'){
       hkPlayers.push(player)
-    }else if(player.country == 'jp'){
+    }else if(player.country === 'jp'){
       jpPlayers.push(player)
-    }else if(player.country == 'tw'){
+    }else if(player.country === 'tw'){
       twPlayers.push(player)
     }
   })
-  
-  const [user, setUser] = useState({ id: 1, admin: false, votes: []})
-  const [voteCount, setVoteCount] = useState(3)
-  
   // List used to change styling according to player index
   const [votedList, setVotedList] = useState([])
 
@@ -104,13 +103,14 @@ const PlayerList = (props) => {
     flex-wrap: wrap;
   `;
 
-  const selectPlayer = (nickname, country, index) => {
+  const selectPlayer =  (nickname, country, index) => {
     // Check they haven't already voted for the player
-    if(user.votes.some(player => player.nickname == nickname)){
+
+    if(user.votes.some(player => player.nickname === nickname)){
       const checkToRemove = window.confirm('You have already voted for this player, do you want to remove him/her from your voting selection?')
       // Remove vote after confirmation
       if(checkToRemove){
-        user.votes.splice(user.votes.findIndex(player => player.nickname == nickname),1);
+        user.votes.splice(user.votes.findIndex(player => player.nickname === nickname),1);
         setVoteCount(voteCount + 1)
         const newVotedList = votedList.filter(item => item !== index)
         setVotedList(newVotedList)
@@ -118,8 +118,9 @@ const PlayerList = (props) => {
       }
       return
     } 
+    
     // Check they don't have more than three votes
-    if(user.votes.length == 3 ){
+    if(user.votes.length === 3 ){
       alert("You have already voted for three people")
       return;
     } 
@@ -129,9 +130,11 @@ const PlayerList = (props) => {
       return
     }
     // Add voted player to votes array
-    user.votes.push({nickname: nickname, country: country})
+    const updatedVotes = user.votes.push({nickname: nickname, country: country})
+    dispatch({ type: "ADD_PLAYER_VOTE", payload: updatedVotes });
     setVoteCount(voteCount - 1)
     setVotedList([...votedList, index]) 
+    console.log('jj', user.votes)
   }
   
 
@@ -141,7 +144,7 @@ const PlayerList = (props) => {
     <PlayerWrapper>
       {players &&
         players.map((player, i) => {
-          if (player.country == props.region) {
+          if (player.country === props.region) {
             if(votedList.includes(i)){
               return (  
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
