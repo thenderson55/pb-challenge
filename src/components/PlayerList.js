@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import playersContext from "../context/playersContext";
+import Button from './Button'
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
 import tw from "../images/tw.png"
@@ -20,7 +21,7 @@ const PlayerList = (props) => {
     }
   })
   
-  const [user, setUser] = useState({ id: 1, admin: false, votes: []})
+  const [user, setUser] = useState({ name: 'Bob', status: 'admin', votes: []})
   const [voteCount, setVoteCount] = useState(3)
   
   // List used to change styling according to player index
@@ -133,11 +134,22 @@ const PlayerList = (props) => {
     setVoteCount(voteCount - 1)
     setVotedList([...votedList, index]) 
   }
+
+  const changeUser = (e) => {
+    console.log(e.target.value)
+    setUser({...user, status: e.target.value })
+  }
+
+  let endVoting;
+  if(user.status === 'admin'){
+    endVoting = <Button>Stop Voting</Button>
+  }else {
+    endVoting = null
+  }
   
 
   const playerList = (
     <>
-    <p>You have {voteCount} votes remaining.</p>
     <PlayerWrapper>
       {players &&
         players.map((player, i) => {
@@ -175,7 +187,12 @@ const PlayerList = (props) => {
  
   return (
     <div>
+      <p>You are logged in as: {user.name}  {endVoting}</p>
+      <p>You have {voteCount} votes remaining.</p>
       {playerList}
+      <Button onClick={changeUser} value='visitor'>Visitor</Button>
+      <Button onClick={changeUser} value='user'>User</Button>
+      <Button onClick={changeUser} value='admin'>Admin</Button>
     </div> 
   );
 };

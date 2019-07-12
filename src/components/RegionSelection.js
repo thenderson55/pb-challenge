@@ -1,10 +1,7 @@
-import React, { useContext, useState, useReducer } from "react";
+import React, { useState } from "react";
 import Button from './Button'
 import styled from 'styled-components'
 import PlayerList from './PlayerList'
-import playersContext  from "../context/playersContext";
-import playersReducer from '../context/playersReducer'
-import { CHANGE_REGION } from '../context/types'
 
 const Regions = styled.div`
   display: flex;
@@ -21,19 +18,14 @@ const RegionHeader = styled.span`
 `;
 
 const RegionSelection = (props) => {
-  // const [state, dispatch] = useReducer(playersReducer, initialState)
   const [region, setRegion] = useState('hk')
-
 
   function clickHandler (e) {
     setRegion(e.target.value)
-    // dispatch({ type: CHANGE_REGION, 
-    //   payload: e.target.value})
-    // e.target.disabled = true
   }
 
   return (
-    <div>
+    <div style={{textAlign: 'center'}}>
       <RegionHeader>Vote for players to represent your region's team</RegionHeader>
       <p>Select your region to browse players. <br/> NOTE : You may only vote for one region.</p>
       <Regions>
