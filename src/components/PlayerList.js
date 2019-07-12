@@ -7,7 +7,7 @@ import tw from "../images/tw.png"
 import Button from './Button'
 
 const PlayerList = (props) => {
-  const [{ user, players, voteCount, votedList, endVoting }, dispatch] = useStateValue()
+  const [{ user, players, voteCount, votedList, endVoting, region }, dispatch] = useStateValue()
   
   const hkPlayers = []
   const jpPlayers = []
@@ -102,7 +102,21 @@ const PlayerList = (props) => {
     flex-wrap: wrap;
   `;
 
-  const VotingButton = styled(Button)`
+  const VotingButton = styled.button`
+    border-radius: 3px;
+    height: 20px;
+    width: 100%;
+    margin-left: 10px;
+    max-width: 100px;
+    font-weight: 500;
+    font-size: 12px;
+    user-select: none;
+    background: rgb(216, 216, 216);
+    cursor: pointer;
+    &:hover {
+      background: rgb(255, 125, 8);
+      border-color: rgb(255, 125, 8);
+    }
     &::before{
       content: "${() => endVoting ? 'Start voting': 'Stop voting'}";
     }
@@ -149,11 +163,15 @@ const PlayerList = (props) => {
 
   const stopVoting = () => {
     dispatch({ type: "CHANGE_VOTING", payload: !endVoting })
+
   }
 
   let endVotingButton, percentages;
   if(user.status === 'admin'){
     endVotingButton = <VotingButton onClick={stopVoting}></VotingButton>
+  }
+  if(user.status === 'admin' && endVoting){
+    percentages = <Percentage>23</Percentage> 
   }
   if(user.status === 'visitor' && endVoting){
     percentages = <Percentage>23</Percentage> 
@@ -168,11 +186,12 @@ const PlayerList = (props) => {
     <PlayerWrapper>
       {players &&
         players.map((player, i) => {
-          if (player.country === props.region) {
+          if (player.country === region) {
             if(votedList.includes(i)){
               return (  
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
                   <AvatarContainer>
+                    {percentages}
                     <Selection>Your selection</Selection>
                     <PlayerAvatar style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
                   </AvatarContainer>
@@ -184,8 +203,8 @@ const PlayerList = (props) => {
             else {
               return (
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
-                  {/* <Percentage>22</Percentage> */}
                   <AvatarContainer>
+                    {percentages}
                     <Selection style={{ visibility: 'hidden'}}>Your selection</Selection>
                     <PlayerAvatar src={player.avatarUrl}/>
                   </AvatarContainer>
@@ -203,7 +222,6 @@ const PlayerList = (props) => {
   return (
     <div>
       <p>You are logged in as: {user.name}  {endVotingButton}</p>
-      <p>You have {voteCount} votes remaining.</p>
       {playerList}
       <Button onClick={changeUser} value='visitor'>Visitor</Button>
       <Button onClick={changeUser} value='user'>User</Button>

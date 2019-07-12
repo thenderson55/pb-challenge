@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 
 const Button  = styled.button`
-  font-family: sans-serif;
   border-radius: 3px;
   height: 30px;
   width: 100%;
@@ -11,11 +10,10 @@ const Button  = styled.button`
   font-size: 12px;
   user-select: none;
   cursor: pointer;
-  /* background: rgb(216, 216, 216); */
-  background: ${ props => props.primary ? 'red' : 'rgb(216, 216, 216)' };
-  border-color: ${ props => props.theme.primary };
+  background: rgb(216, 216, 216);
   &:hover {
-    background: pink;
+    background: rgb(255, 125, 8);
+    border-color: rgb(255, 125, 8);
   }
 `;
 
