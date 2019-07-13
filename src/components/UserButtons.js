@@ -3,7 +3,6 @@ import { useStateValue } from "../context/store";
 import Button from "./Button";
 
 export const UserButtons = () => {
-
   const [{}, dispatch] = useStateValue();
 
   const changeUser = (e) => {

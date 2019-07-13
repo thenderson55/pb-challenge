@@ -1,34 +1,21 @@
 import React from "react";
 import styled from "styled-components";
-
 import { useStateValue } from "../context/store";
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
 import tw from "../images/tw.png"
 
 const PlayerList = () => {
-  const [{ user, players, voteCount, votedList, endVoting, region }, dispatch] = useStateValue()
+  const [{ user, players, voteCount, votedList, endVoting, region, hkPlayersVotes, jpPlayersVotes, twPlayersVotes }, dispatch] = useStateValue()
   
-  const hkPlayers = []
-  const jpPlayers = []
-  const twPlayers = []
-  players.forEach(player => {
-    if(player.country === 'hk'){
-      hkPlayers.push(player)
-    }else if(player.country === 'jp'){
-      jpPlayers.push(player)
-    }else if(player.country === 'tw'){
-      twPlayers.push(player)
-    }
-  })
+  let c = jpPlayersVotes
+  console.log(c)
 
   const Player = styled.li`
     width: 170px;
     margin-top: 20px;
     padding: 5px;
     list-style-type: none;
-    font-family: Noto Sans Japanese,Noto Sans,sans-serif;
-    background-color: #2f353d;
     color: #ededed; 
   `
   const AvatarContainer = styled.div`
@@ -122,22 +109,33 @@ const PlayerList = () => {
     }
   `;  
 
-
   const selectPlayer = (nickname, country, index) => {
     if(endVoting || user.status === 'visitor' || user.status === 'admin'){
       return
     }
-    // Check they haven't already voted for the player
+    // Check if already voted for the player then remove
     if(user.votes.some(player => player.nickname === nickname)){
-      const checkToRemove = window.confirm('You have already voted for this player, do you want to remove him/her from your voting selection?')
-      // Remove vote after confirmation
-      if(checkToRemove){
-        user.votes.splice(user.votes.findIndex(player => player.nickname === nickname),1);
-        dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount + 1 });
-        const newVotedList = votedList.filter(item => item !== index)
-        dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
-        return
-      }
+      user.votes.splice(user.votes.findIndex(player => player.nickname === nickname),1);
+      // Decrease players vote count
+      players.forEach(player => {
+        if(player.nickname === nickname){
+          player.votes = player.votes - 1
+          console.log(player)
+        }
+      })
+      // Decrease total regional vote count
+      players.forEach(player => {
+        if(player.country === 'hk' && player.votes){
+          dispatch({ type: "UPDATE_TOTAL_VOTES", payload: hkPlayersVotes + player.votes }); 
+        }else if(player.country === 'jp' && player.votes){
+          return jpPlayersVotes - player.votes
+        }else if(player.country === 'tw' && player.votes){
+          return twPlayersVotes - player.votes
+        }
+      })
+      dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount + 1 });
+      const newVotedList = votedList.filter(item => item !== index)
+      dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
       return
     } 
     // Check they don't have more than three votes
@@ -152,14 +150,49 @@ const PlayerList = () => {
     }
     // Add voted player to votes array
     user.votes.push({nickname: nickname, country: country})
+    // Increase players vote count
+    players.forEach(player => {
+      if(player.nickname === nickname){
+        player.votes = player.votes + 1 || 1
+        // dispatch({ type: "INCREASE_PLAYERS_VOTE", payload: players });
+        console.log(player)
+      }
+    })
     dispatch({ type: "ADD_PLAYER_VOTE", payload: user.votes });
     dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount - 1 }); 
     dispatch({ type: "UPDATE_VOTEDLIST", payload: [...votedList, index] });
+    // Increase total regional vote count
+    players.forEach(player => {
+      if(player.country === 'hk' && player.votes){
+        dispatch({ type: "UPDATE_TOTAL_VOTES", payload: hkPlayersVotes + player.votes }); 
+        console.log(hkPlayersVotes)
+      }else if(player.country === 'jp' && player.votes){
+        return hkPlayersVotes + player.votes
+      }else if(player.country === 'tw' && player.votes){
+        return hkPlayersVotes + player.votes
+      }
+    })
+    console.log(hkPlayersVotes)
+    // console.log(1/hkPlayersVotes*100)
   }
 
   const stopVoting = () => {
     dispatch({ type: "CHANGE_VOTING", payload: !endVoting })
+    console.log(hkPlayersVotes)
+    players.forEach(player => {
+      console.log(hkPlayersVotes)
 
+      if(player.country === 'hk' && player.votes){
+        console.log(player.nickname, player.votes, hkPlayersVotes)
+        player.votes = player.votes/hkPlayersVotes*100
+        console.log('oo', player.votes)
+      }else if(player.country === 'jp' && player.votes){
+        player.votes = player.votes/jpPlayersVotes*100
+      }else if(player.country === 'tw' && player.votes){
+        player.votes = player.votes/twPlayersVotes*100
+      }
+    })
+    console.log()
   }
 
   let endVotingButton, percentages;
@@ -167,7 +200,7 @@ const PlayerList = () => {
     endVotingButton = <VotingButton onClick={stopVoting}></VotingButton>
   }
   if(user.status === 'admin' && endVoting){
-    percentages = <Percentage>23</Percentage> 
+    percentages = <Percentage></Percentage> 
   }
   if(user.status === 'visitor' && endVoting){
     percentages = <Percentage>23</Percentage> 
@@ -180,16 +213,16 @@ const PlayerList = () => {
     <>
     <PlayerWrapper>
       {players &&
-        players.map((player, i) => {
+        players.map((player, index) => {
           if (player.country === region) {
-            if(votedList.includes(i)){
+            if(votedList.includes(index)){
               return (  
-                <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>                    
-                  {percentages}
+                <Player key={index}>                    
                   <AvatarContainer>
+                    <Percentage>{ player.votes/hkPlayersVotes*100 }</Percentage>
                     {percentages}
                     <Selection>Your selection</Selection>
-                    <PlayerAvatar style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
+                    <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
                   </AvatarContainer>
                   <PlayerName>{player.nickname} <img src={hk} alt=""/></PlayerName>
                   <PlayerMessage>{player.message}</PlayerMessage>
@@ -198,11 +231,11 @@ const PlayerList = () => {
             } 
             else {
               return (
-                <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
+                <Player key={index}>
                   <AvatarContainer>
                     {percentages}
                     <Selection style={{ visibility: 'hidden'}}>Your selection</Selection>
-                    <PlayerAvatar src={player.avatarUrl}/>
+                    <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} src={player.avatarUrl}/>
                   </AvatarContainer>
                   <PlayerName>{player.nickname} <img src={tw} alt=""/></PlayerName>
                   <PlayerMessage>{player.message}</PlayerMessage>
@@ -216,7 +249,6 @@ const PlayerList = () => {
   );
  
   return (
-
     <>
       <p>You are logged in as: {user.name}  {endVotingButton}</p>
       {playerList}

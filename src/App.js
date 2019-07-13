@@ -10,8 +10,7 @@ function App() {
   
   return (
     <StateProvider initialState={initialState} reducer={reducer}>
-      {/* <p>You are logged in as: {user.name}  {endVoting}</p> */}
-      <RegionSelection /> 
+      <RegionSelection/> 
       <PlayerList/>
       <UserButtons/>
     </StateProvider>

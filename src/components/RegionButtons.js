@@ -4,7 +4,6 @@ import Button from "./Button";
 import styled from "styled-components";
 
 export const RegionButtons = () => {
-
   const [{}, dispatch] = useStateValue();
 
   const Regions = styled.div`
