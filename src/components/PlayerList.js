@@ -4,9 +4,8 @@ import { useStateValue } from "../context/store";
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
 import tw from "../images/tw.png"
-import Button from './Button'
 
-const PlayerList = (props) => {
+const PlayerList = () => {
   const [{ user, players, voteCount, votedList, endVoting, region }, dispatch] = useStateValue()
   
   const hkPlayers = []
@@ -142,7 +141,7 @@ const PlayerList = (props) => {
       return;
     } 
     // Check that they are only voting for one region
-    if(user.votes.some(player => player.country !== props.region)){
+    if(user.votes.some(player => player.country !== region)){
       alert('You can only vote for one region')
       return
     }
@@ -151,14 +150,6 @@ const PlayerList = (props) => {
     dispatch({ type: "ADD_PLAYER_VOTE", payload: user.votes });
     dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount - 1 }); 
     dispatch({ type: "UPDATE_VOTEDLIST", payload: [...votedList, index] });
-  }
-
-
-  const changeUser = (e) => {
-    console.log(e.target.value)
-    dispatch({ type: "CHANGE_USER", payload: e.target.value })
-
-    // setUser({...user, status: e.target.value })
   }
 
   const stopVoting = () => {
@@ -220,13 +211,10 @@ const PlayerList = (props) => {
   );
  
   return (
-    <div>
+    <>
       <p>You are logged in as: {user.name}  {endVotingButton}</p>
       {playerList}
-      <Button onClick={changeUser} value='visitor'>Visitor</Button>
-      <Button onClick={changeUser} value='user'>User</Button>
-      <Button onClick={changeUser} value='admin'>Admin</Button>
-    </div> 
+    </> 
   );
 };
 
