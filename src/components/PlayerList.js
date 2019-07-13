@@ -8,7 +8,12 @@ import tw from "../images/tw.png"
 const PlayerList = () => {
   const [{ user, players, voteCount, votedList, endVoting, region, totalVotes }, dispatch] = useStateValue()
   const [ votes, setVotes ] = useState(totalVotes)
-  console.log(votes)
+
+  const PlayersWrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  `;
 
   const Player = styled.li`
     width: 170px;
@@ -38,7 +43,7 @@ const PlayerList = () => {
     border-radius: 50%;
     &:hover {
       border-color: ${() => votedList.length !== 3 ? "rgb(255, 125, 8)" : null};
-      border-color: ${() => user.status === 'visitor' ? "rgb(71, 81, 93)" : null};
+      border-color: ${() => user.status !== 'user' ? "rgb(71, 81, 93)" : null};
       border-color: ${() => endVoting ? "rgb(71, 81, 93)" : null};
     }
   `;
@@ -58,8 +63,6 @@ const PlayerList = () => {
   `;
 
   const Selection = styled.div`
-    /* position: sticky; */
-    /* margin: auto; */
     width: 65px;
     z-index: 2;
     transform: translateY(90px);
@@ -79,12 +82,6 @@ const PlayerList = () => {
     font-size: 12px;
     text-align: left;
     padding: 0 10px;
-  `;
-
-  const PlayerWrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
   `;
 
   const VotingButton = styled.button`
@@ -108,7 +105,8 @@ const PlayerList = () => {
   `;  
 
   const selectPlayer = (nickname, country, index) => {
-    if(endVoting || user.status === 'visitor' || user.status === 'admin'){
+    // Check voting is still open and it is a 'user'
+    if(endVoting || user.status !== 'user'){
       return;
     }
     // Check if already voted for the player then remove
@@ -135,12 +133,12 @@ const PlayerList = () => {
       dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
       return;
     } 
-    // Check they don't have more than three votes
+    // Check user doen't have more than three votes
     if(user.votes.length === 3 ){
       alert("You have already voted for three people")
       return;
     } 
-    // Check that they are only voting for one region
+    // Check user is only voting for one region
     if(user.votes.some(player => player.country !== region)){
       alert('You can only vote for one region')
       return;
@@ -170,30 +168,18 @@ const PlayerList = () => {
   }
 
   const stopVoting = () => {
-    console.log(totalVotes)
-    console.log(endVoting)
     dispatch({ type: "CHANGE_VOTING", payload: !endVoting })
     dispatch({ type: "UPDATE_TOTALVOTES", payload: votes })
-    console.log('d', totalVotes.hk)
   }
 
-  let endVotingButton, percentages;
+  let endVotingButton;
   if(user.status === 'admin'){
     endVotingButton = <VotingButton onClick={stopVoting}></VotingButton>
   }
-  if(user.status === 'admin' && endVoting){
-    percentages = <Percentage></Percentage> 
-  }
-  if(user.status === 'visitor' && endVoting){
-    percentages = <Percentage>23</Percentage> 
-  }
-  if(user.status === 'user' && endVoting){
-    percentages = <Percentage>23</Percentage> 
-  } 
 
   const playerList = (
     <>
-    <PlayerWrapper>
+    <PlayersWrapper>
       {players &&
         players.map((player, index) => {
           if (player.country === region) {
@@ -229,13 +215,13 @@ const PlayerList = () => {
             }
           }
         })}
-    </PlayerWrapper>
+    </PlayersWrapper>
     </>
   );
  
   return (
     <>
-      <p>You are logged in as: {user.name}  {endVotingButton}</p>
+      <p>You are logged in as: {user.status}  {endVotingButton}</p>
       {playerList}
     </> 
   );
