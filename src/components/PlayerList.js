@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import { useStateValue } from "../context/store";
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
@@ -121,7 +122,12 @@ const PlayerList = () => {
     }
   `;  
 
-  const selectPlayer =  (nickname, country, index) => {
+
+
+  const selectPlayer = (nickname, country, index) => {
+    if(endVoting || user.status === 'visitor' || user.status === 'admin'){
+      return
+    }
     // Check they haven't already voted for the player
     if(user.votes.some(player => player.nickname === nickname)){
       const checkToRemove = window.confirm('You have already voted for this player, do you want to remove him/her from your voting selection?')
@@ -170,6 +176,27 @@ const PlayerList = () => {
   if(user.status === 'user' && endVoting){
     percentages = <Percentage>23</Percentage> 
   }
+
+  const changeUser = (e) => {
+    console.log(e.target.value)
+    setUser({...user, status: e.target.value })
+  }
+  const stopVoting = () => {
+    console.log(endVoting)
+    setEndVoting(!endVoting)
+    console.log(endVoting)
+  }
+
+  let endVotingButton, percentages;
+  if(user.status === 'admin'){
+    endVotingButton = <VotingButton onClick={stopVoting}></VotingButton>
+  }
+  if(user.status === 'visitor' && endVoting){
+    percentages = <Percentage>23</Percentage> 
+  }
+  if(user.status === 'user' && endVoting){
+    percentages = <Percentage>23</Percentage> 
+  }
   
 
   const playerList = (
@@ -180,7 +207,8 @@ const PlayerList = () => {
           if (player.country === region) {
             if(votedList.includes(i)){
               return (  
-                <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
+                <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>                    
+                  {percentages}
                   <AvatarContainer>
                     {percentages}
                     <Selection>Your selection</Selection>
@@ -211,6 +239,7 @@ const PlayerList = () => {
   );
  
   return (
+
     <>
       <p>You are logged in as: {user.name}  {endVotingButton}</p>
       {playerList}
