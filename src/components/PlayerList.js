@@ -46,7 +46,7 @@ const PlayerList = () => {
   const Percentage = styled.div`
     position: sticky;
     margin: auto;
-    width: 20px;
+    max-width: 70px;
     z-index: 2;
     transform: translateY(20px);
     font-size: 10px;
@@ -197,14 +197,13 @@ const PlayerList = () => {
       {players &&
         players.map((player, index) => {
           if (player.country === region) {
-            if(votedList.includes(index)){
-              // console.log(totalVotes[region])
+            if(votedList.includes(index) && user.status !== 'visitor' && user.status !== 'admin'){
               return (  
                 <Player key={index}>                    
                   <AvatarContainer>
-                    { player.votes ? <Percentage>
-                    {  Number((player.votes/totalVotes[region]*100).toFixed(2)) }
-                    </Percentage> : <Percentage>0</Percentage> }
+                    { player.votes ? <Percentage style={{backgroundColor: 'rgb(255, 125, 8)', color: '#ededed' }}>
+                    {  Number((player.votes/totalVotes[region]*100).toFixed(2)) }%
+                    </Percentage> : null }
                     <Selection>Your selection</Selection>
                     <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
                   </AvatarContainer>
@@ -218,8 +217,8 @@ const PlayerList = () => {
                 <Player key={index}>
                   <AvatarContainer>
                     { player.votes ? <Percentage>
-                    { player.votes/totalVotes[region]*100 }
-                    </Percentage> : <Percentage>0</Percentage> }
+                    { Number((player.votes/totalVotes[region]*100).toFixed(2)) }%
+                    </Percentage> : <Percentage>0%</Percentage> }
                     <Selection style={{ visibility: 'hidden'}}>Your selection</Selection>
                     <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} src={player.avatarUrl}/>
                   </AvatarContainer>
