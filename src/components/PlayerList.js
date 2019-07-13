@@ -8,10 +8,10 @@ import tw from "../images/tw.png"
 const PlayerList = () => {
   const [{ user, players, voteCount, votedList, endVoting, region, totalVotes }, dispatch] = useStateValue()
   const [ votes, setVotes ] = useState(totalVotes)
+  console.log(votes)
 
   const Player = styled.li`
     width: 170px;
-    margin-top: 20px;
     padding: 5px;
     list-style-type: none;
     color: #ededed; 
@@ -54,6 +54,7 @@ const PlayerList = () => {
     color: black;
     padding: 1px 5px;
     border-radius: 3px;
+    visibility: ${() => endVoting ? 'visible' : 'hidden'};
   `;
 
   const Selection = styled.div`
@@ -81,7 +82,6 @@ const PlayerList = () => {
   `;
 
   const PlayerWrapper = styled.div`
-    margin-top: 20px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -109,7 +109,7 @@ const PlayerList = () => {
 
   const selectPlayer = (nickname, country, index) => {
     if(endVoting || user.status === 'visitor' || user.status === 'admin'){
-      return
+      return;
     }
     // Check if already voted for the player then remove
     if(user.votes.some(player => player.nickname === nickname)){
@@ -133,7 +133,7 @@ const PlayerList = () => {
       // Remove selected player from indexed list
       const newVotedList = votedList.filter(item => item !== index)
       dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
-      return
+      return;
     } 
     // Check they don't have more than three votes
     if(user.votes.length === 3 ){
@@ -143,7 +143,7 @@ const PlayerList = () => {
     // Check that they are only voting for one region
     if(user.votes.some(player => player.country !== region)){
       alert('You can only vote for one region')
-      return
+      return;
     }
     // Add voted player to votes array
     user.votes.push({nickname: nickname, country: country})
@@ -170,22 +170,11 @@ const PlayerList = () => {
   }
 
   const stopVoting = () => {
+    console.log(totalVotes)
+    console.log(endVoting)
     dispatch({ type: "CHANGE_VOTING", payload: !endVoting })
-    // console.log(hkPlayersVotes)
-    // players.forEach(player => {
-    //   console.log(hkPlayersVotes)
-
-    //   if(player.country === 'hk' && player.votes){
-    //     console.log(player.nickname, player.votes, hkPlayersVotes)
-    //     player.votes = player.votes/hkPlayersVotes*100
-    //     console.log('oo', player.votes)
-    //   }else if(player.country === 'jp' && player.votes){
-    //     player.votes = player.votes/jpPlayersVotes*100
-    //   }else if(player.country === 'tw' && player.votes){
-    //     player.votes = player.votes/twPlayersVotes*100
-    //   }
-    // })
-    console.log()
+    dispatch({ type: "UPDATE_TOTALVOTES", payload: votes })
+    console.log('d', totalVotes.hk)
   }
 
   let endVotingButton, percentages;
@@ -209,11 +198,13 @@ const PlayerList = () => {
         players.map((player, index) => {
           if (player.country === region) {
             if(votedList.includes(index)){
+              // console.log(totalVotes[region])
               return (  
                 <Player key={index}>                    
                   <AvatarContainer>
-                    <Percentage>{ player.votes/votes[region]*100 }</Percentage>
-                    {percentages}
+                    { player.votes ? <Percentage>
+                    {  Number((player.votes/totalVotes[region]*100).toFixed(2)) }
+                    </Percentage> : <Percentage>0</Percentage> }
                     <Selection>Your selection</Selection>
                     <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
                   </AvatarContainer>
@@ -226,7 +217,9 @@ const PlayerList = () => {
               return (
                 <Player key={index}>
                   <AvatarContainer>
-                    {percentages}
+                    { player.votes ? <Percentage>
+                    { player.votes/totalVotes[region]*100 }
+                    </Percentage> : <Percentage>0</Percentage> }
                     <Selection style={{ visibility: 'hidden'}}>Your selection</Selection>
                     <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} src={player.avatarUrl}/>
                   </AvatarContainer>

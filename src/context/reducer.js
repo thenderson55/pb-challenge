@@ -45,6 +45,11 @@ export const reducer = (state, action) => {
       ...state,
       voteCount: action.payload
     };
+    case "UPDATE_TOTALVOTES":
+      return {
+        ...state,
+        totalVotes: action.payload
+      };
     case "UPDATE_VOTEDLIST":
     return {
       ...state,
