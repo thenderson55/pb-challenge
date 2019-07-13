@@ -123,7 +123,6 @@ const PlayerList = () => {
   `;  
 
 
-
   const selectPlayer = (nickname, country, index) => {
     if(endVoting || user.status === 'visitor' || user.status === 'admin'){
       return
@@ -175,29 +174,7 @@ const PlayerList = () => {
   }
   if(user.status === 'user' && endVoting){
     percentages = <Percentage>23</Percentage> 
-  }
-
-  const changeUser = (e) => {
-    console.log(e.target.value)
-    setUser({...user, status: e.target.value })
-  }
-  const stopVoting = () => {
-    console.log(endVoting)
-    setEndVoting(!endVoting)
-    console.log(endVoting)
-  }
-
-  let endVotingButton, percentages;
-  if(user.status === 'admin'){
-    endVotingButton = <VotingButton onClick={stopVoting}></VotingButton>
-  }
-  if(user.status === 'visitor' && endVoting){
-    percentages = <Percentage>23</Percentage> 
-  }
-  if(user.status === 'user' && endVoting){
-    percentages = <Percentage>23</Percentage> 
-  }
-  
+  } 
 
   const playerList = (
     <>
