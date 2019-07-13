@@ -1,18 +1,20 @@
-import React from 'react';
-import RegionSelection from  './components/RegionSelection'
-import styled from 'styled-components'
+import React from "react";
+import { StateProvider } from "./context/store";
+import RegionSelection from "./components/RegionSelection";
+import { initialState, reducer } from './context/reducer'
+import { UserButtons } from './components/UserButtons'
+import PlayerList from "./components/PlayerList";
+
 
 function App() {
-
-  // const { user } = useContext(MyContext);
-  const Home = styled.div`
-    padding: 20px;
-  `;
-
+  
   return (
-    <Home>
-      <RegionSelection></RegionSelection>
-    </Home>
+    <StateProvider initialState={initialState} reducer={reducer}>
+      {/* <p>You are logged in as: {user.name}  {endVoting}</p> */}
+      <RegionSelection /> 
+      <PlayerList/>
+      <UserButtons/>
+    </StateProvider>
   );
 }
 

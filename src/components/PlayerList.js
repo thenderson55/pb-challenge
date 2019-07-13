@@ -1,32 +1,26 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import playersContext from "../context/playersContext";
-import Button from './Button'
+
+import { useStateValue } from "../context/store";
 import hk from "../images/hk.png"
 import jp from "../images/jp.png"
 import tw from "../images/tw.png"
 
-const PlayerList = (props) => {
-  const { players } = useContext(playersContext);
+const PlayerList = () => {
+  const [{ user, players, voteCount, votedList, endVoting, region }, dispatch] = useStateValue()
+  
   const hkPlayers = []
   const jpPlayers = []
   const twPlayers = []
   players.forEach(player => {
-    if(player.country == 'hk'){
+    if(player.country === 'hk'){
       hkPlayers.push(player)
-    }else if(player.country == 'jp'){
+    }else if(player.country === 'jp'){
       jpPlayers.push(player)
-    }else if(player.country == 'tw'){
+    }else if(player.country === 'tw'){
       twPlayers.push(player)
     }
   })
-  
-  const [user, setUser] = useState({ name: 'Bob', status: 'admin', votes: []})
-  const [voteCount, setVoteCount] = useState(3)
-  const [endVoting, setEndVoting] = useState(false)
-  
-  // List used to change styling according to player index
-  const [votedList, setVotedList] = useState([])
 
   const Player = styled.li`
     width: 170px;
@@ -108,43 +102,79 @@ const PlayerList = (props) => {
     flex-wrap: wrap;
   `;
 
-  const VotingButton = styled(Button)`
+  const VotingButton = styled.button`
+    border-radius: 3px;
+    height: 20px;
+    width: 100%;
+    margin-left: 10px;
+    max-width: 100px;
+    font-weight: 500;
+    font-size: 12px;
+    user-select: none;
+    background: rgb(216, 216, 216);
+    cursor: pointer;
+    &:hover {
+      background: rgb(255, 125, 8);
+      border-color: rgb(255, 125, 8);
+    }
     &::before{
       content: "${() => endVoting ? 'Start voting': 'Stop voting'}";
     }
-  `;
+  `;  
+
+
 
   const selectPlayer = (nickname, country, index) => {
     if(endVoting || user.status === 'visitor' || user.status === 'admin'){
       return
     }
     // Check they haven't already voted for the player
-    if(user.votes.some(player => player.nickname == nickname)){
+    if(user.votes.some(player => player.nickname === nickname)){
       const checkToRemove = window.confirm('You have already voted for this player, do you want to remove him/her from your voting selection?')
       // Remove vote after confirmation
       if(checkToRemove){
-        user.votes.splice(user.votes.findIndex(player => player.nickname == nickname),1);
-        setVoteCount(voteCount + 1)
+        user.votes.splice(user.votes.findIndex(player => player.nickname === nickname),1);
+        dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount + 1 });
         const newVotedList = votedList.filter(item => item !== index)
-        setVotedList(newVotedList)
+        dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
         return
       }
       return
     } 
     // Check they don't have more than three votes
-    if(user.votes.length == 3 ){
+    if(user.votes.length === 3 ){
       alert("You have already voted for three people")
       return;
     } 
     // Check that they are only voting for one region
-    if(user.votes.some(player => player.country !== props.region)){
+    if(user.votes.some(player => player.country !== region)){
       alert('You can only vote for one region')
       return
     }
     // Add voted player to votes array
     user.votes.push({nickname: nickname, country: country})
-    setVoteCount(voteCount - 1)
-    setVotedList([...votedList, index]) 
+    dispatch({ type: "ADD_PLAYER_VOTE", payload: user.votes });
+    dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount - 1 }); 
+    dispatch({ type: "UPDATE_VOTEDLIST", payload: [...votedList, index] });
+  }
+
+  const stopVoting = () => {
+    dispatch({ type: "CHANGE_VOTING", payload: !endVoting })
+
+  }
+
+  let endVotingButton, percentages;
+  if(user.status === 'admin'){
+    endVotingButton = <VotingButton onClick={stopVoting}></VotingButton>
+  }
+  if(user.status === 'admin' && endVoting){
+    percentages = <Percentage>23</Percentage> 
+  }
+  if(user.status === 'visitor' && endVoting){
+    percentages = <Percentage>23</Percentage> 
+  }
+  if(user.status === 'user' && endVoting){
+    percentages = <Percentage>23</Percentage> 
   }
 
   const changeUser = (e) => {
@@ -174,12 +204,13 @@ const PlayerList = (props) => {
     <PlayerWrapper>
       {players &&
         players.map((player, i) => {
-          if (player.country == props.region) {
+          if (player.country === region) {
             if(votedList.includes(i)){
               return (  
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>                    
                   {percentages}
                   <AvatarContainer>
+                    {percentages}
                     <Selection>Your selection</Selection>
                     <PlayerAvatar style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
                   </AvatarContainer>
@@ -191,8 +222,8 @@ const PlayerList = (props) => {
             else {
               return (
                 <Player onClick={() => selectPlayer(player.nickname, player.country, i)} key={i}>
-                  {percentages}
                   <AvatarContainer>
+                    {percentages}
                     <Selection style={{ visibility: 'hidden'}}>Your selection</Selection>
                     <PlayerAvatar src={player.avatarUrl}/>
                   </AvatarContainer>
@@ -208,14 +239,11 @@ const PlayerList = (props) => {
   );
  
   return (
-    <div>
+
+    <>
       <p>You are logged in as: {user.name}  {endVotingButton}</p>
-      <p>You have {voteCount} votes remaining.</p>
       {playerList}
-      <Button onClick={changeUser} value='visitor'>Visitor</Button>
-      <Button onClick={changeUser} value='user'>User</Button>
-      <Button onClick={changeUser} value='admin'>Admin</Button>
-    </div> 
+    </> 
   );
 };
 

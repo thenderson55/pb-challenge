@@ -1,9 +1,7 @@
-import React, { useContext} from "react";
-import UsersContext from '../context/UsersContext'
+import React from "react";
 import Button from './Button'
 
 const LogIn = () => {
-  const { user } = useContext(UsersContext)
 
   function handleSubmit (event) {
     event.preventDefault()
