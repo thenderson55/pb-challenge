@@ -11,9 +11,11 @@ export const initialState = {
   voteCount: 3,
   votedList: [],
   endVoting: false,
-  hkPlayersVotes: 0,
-  twPlayersVotes: 0,
-  jpPlayersVotes: 0,
+  totalVotes: {
+    hk: 0,
+    tw: 0,
+    jp: 0,
+  }
 };
 
 export const reducer = (state, action) => {
@@ -42,11 +44,6 @@ export const reducer = (state, action) => {
     return {
       ...state,
       voteCount: action.payload
-    };
-    case "UPDATE_TOTAL_VOTES":
-    return {
-      ...state,
-      hkPlayersVotes: action.payload
     };
     case "UPDATE_VOTEDLIST":
     return {

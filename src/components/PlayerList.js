@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useStateValue } from "../context/store";
 import hk from "../images/hk.png"
@@ -6,10 +6,8 @@ import jp from "../images/jp.png"
 import tw from "../images/tw.png"
 
 const PlayerList = () => {
-  const [{ user, players, voteCount, votedList, endVoting, region, hkPlayersVotes, jpPlayersVotes, twPlayersVotes }, dispatch] = useStateValue()
-  
-  let c = jpPlayersVotes
-  console.log(c)
+  const [{ user, players, voteCount, votedList, endVoting, region, totalVotes }, dispatch] = useStateValue()
+  const [ votes, setVotes ] = useState(totalVotes)
 
   const Player = styled.li`
     width: 170px;
@@ -123,17 +121,16 @@ const PlayerList = () => {
           console.log(player)
         }
       })
+      dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount + 1 });
       // Decrease total regional vote count
       players.forEach(player => {
-        if(player.country === 'hk' && player.votes){
-          dispatch({ type: "UPDATE_TOTAL_VOTES", payload: hkPlayersVotes + player.votes }); 
-        }else if(player.country === 'jp' && player.votes){
-          return jpPlayersVotes - player.votes
-        }else if(player.country === 'tw' && player.votes){
-          return twPlayersVotes - player.votes
+        if(player.country === region && player.votes){
+          setVotes({ ...votes,
+            [region]: votes[region] - 1
+          })
         }
       })
-      dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount + 1 });
+      // Remove selected player from indexed list
       const newVotedList = votedList.filter(item => item !== index)
       dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
       return
@@ -150,48 +147,44 @@ const PlayerList = () => {
     }
     // Add voted player to votes array
     user.votes.push({nickname: nickname, country: country})
+    dispatch({ type: "ADD_PLAYER_VOTE", payload: user.votes });
     // Increase players vote count
     players.forEach(player => {
       if(player.nickname === nickname){
         player.votes = player.votes + 1 || 1
-        // dispatch({ type: "INCREASE_PLAYERS_VOTE", payload: players });
-        console.log(player)
+        dispatch({ type: "INCREASE_PLAYERS_VOTE", payload: players });
       }
     })
-    dispatch({ type: "ADD_PLAYER_VOTE", payload: user.votes });
+    // Decrease number of votes remaining
     dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount - 1 }); 
+    // Add selected player to indexed list
     dispatch({ type: "UPDATE_VOTEDLIST", payload: [...votedList, index] });
     // Increase total regional vote count
     players.forEach(player => {
-      if(player.country === 'hk' && player.votes){
-        dispatch({ type: "UPDATE_TOTAL_VOTES", payload: hkPlayersVotes + player.votes }); 
-        console.log(hkPlayersVotes)
-      }else if(player.country === 'jp' && player.votes){
-        return hkPlayersVotes + player.votes
-      }else if(player.country === 'tw' && player.votes){
-        return hkPlayersVotes + player.votes
+      if(player.country === region && player.votes){
+        setVotes({ ...votes,
+          [region]: votes[region] + player.votes
+        })
       }
     })
-    console.log(hkPlayersVotes)
-    // console.log(1/hkPlayersVotes*100)
   }
 
   const stopVoting = () => {
     dispatch({ type: "CHANGE_VOTING", payload: !endVoting })
-    console.log(hkPlayersVotes)
-    players.forEach(player => {
-      console.log(hkPlayersVotes)
+    // console.log(hkPlayersVotes)
+    // players.forEach(player => {
+    //   console.log(hkPlayersVotes)
 
-      if(player.country === 'hk' && player.votes){
-        console.log(player.nickname, player.votes, hkPlayersVotes)
-        player.votes = player.votes/hkPlayersVotes*100
-        console.log('oo', player.votes)
-      }else if(player.country === 'jp' && player.votes){
-        player.votes = player.votes/jpPlayersVotes*100
-      }else if(player.country === 'tw' && player.votes){
-        player.votes = player.votes/twPlayersVotes*100
-      }
-    })
+    //   if(player.country === 'hk' && player.votes){
+    //     console.log(player.nickname, player.votes, hkPlayersVotes)
+    //     player.votes = player.votes/hkPlayersVotes*100
+    //     console.log('oo', player.votes)
+    //   }else if(player.country === 'jp' && player.votes){
+    //     player.votes = player.votes/jpPlayersVotes*100
+    //   }else if(player.country === 'tw' && player.votes){
+    //     player.votes = player.votes/twPlayersVotes*100
+    //   }
+    // })
     console.log()
   }
 
@@ -219,7 +212,7 @@ const PlayerList = () => {
               return (  
                 <Player key={index}>                    
                   <AvatarContainer>
-                    <Percentage>{ player.votes/hkPlayersVotes*100 }</Percentage>
+                    <Percentage>{ player.votes/votes[region]*100 }</Percentage>
                     {percentages}
                     <Selection>Your selection</Selection>
                     <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
