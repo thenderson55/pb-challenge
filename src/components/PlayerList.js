@@ -117,24 +117,20 @@ const PlayerList = () => {
     // Check if already voted for the player then remove
     if(user.votes.some(player => player.nickname === nickname)){
       user.votes.splice(user.votes.findIndex(player => player.nickname === nickname),1);
-      // Decrease players vote count
-      players.forEach(player => {
-        if(player.nickname === nickname){
-          player.votes = player.votes - 1
-        }
-      })
       dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount + 1 });
-      // Decrease total regional vote count
-      players.forEach(player => {
-        if(player.country === region && player.votes){
-          setVotes({ ...votes,
-            [region]: votes[region] - 1
-          })
-        }
-      })
       // Remove selected player from indexed list
       const newVotedList = votedList.filter(item => item !== index)
       dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
+      players.forEach(player => {
+      // Decrease players vote count
+      if(player.nickname === nickname){
+          player.votes = player.votes - 1
+        }
+        // Decrease total regional vote count   
+        setVotes({ ...votes,
+          [region]: votes[region] - 1
+        })
+      })
       return;
     } 
     // Check user doen't have more than three votes
@@ -155,20 +151,17 @@ const PlayerList = () => {
       if(player.nickname === nickname){
         player.votes = player.votes + 1 || 1
         dispatch({ type: "INCREASE_PLAYERS_VOTE", payload: players });
+        console.log(player.votes)
+        // Increase total regional vote count 
+        setVotes({ ...votes,
+          [region]: votes[region] + player.votes
+        })
       }
     })
     // Decrease number of votes remaining
     dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount - 1 }); 
     // Add selected player to indexed list
     dispatch({ type: "UPDATE_VOTEDLIST", payload: [...votedList, index] });
-    // Increase total regional vote count
-    players.forEach(player => {
-      if(player.country === region && player.votes){
-        setVotes({ ...votes,
-          [region]: votes[region] + player.votes
-        })
-      }
-    })
   }
 
   const stopVoting = () => {

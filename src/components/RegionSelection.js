@@ -29,7 +29,7 @@ const RegionSelection = () => {
       content: "${() =>
         endVoting
           ? `The top three vote earners in each region make up that region's team`
-          : `Click on up to three player to place your votes. (${voteCount} votes remaining)`}"
+          : `Click on up to three players to place your votes. (${voteCount} votes remaining)`}"
     }
   `;
 
