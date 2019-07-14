@@ -8,6 +8,11 @@ import tw from "../images/tw.png"
 const PlayerList = () => {
   const [{ user, players, voteCount, votedList, endVoting, region, totalVotes }, dispatch] = useStateValue()
   const [ votes, setVotes ] = useState(totalVotes)
+  const flags = {
+    'hk': hk,
+    'jp': jp,
+    'tw': tw
+  }
 
   const PlayersWrapper = styled.div`
     display: flex;
@@ -116,7 +121,6 @@ const PlayerList = () => {
       players.forEach(player => {
         if(player.nickname === nickname){
           player.votes = player.votes - 1
-          console.log(player)
         }
       })
       dispatch({ type: "CHANGE_VOTECOUNT", payload: voteCount + 1 });
@@ -179,6 +183,7 @@ const PlayerList = () => {
 
   const playerList = (
     <>
+    <p>You are logged in as: {user.status}  {endVotingButton}</p>
     <PlayersWrapper>
       {players &&
         players.map((player, index) => {
@@ -193,7 +198,7 @@ const PlayerList = () => {
                     <Selection>Your selection</Selection>
                     <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} style={{borderColor: 'rgb(255, 125, 8)'}} src={player.avatarUrl}/>
                   </AvatarContainer>
-                  <PlayerName>{player.nickname} <img src={hk} alt=""/></PlayerName>
+                  <PlayerName>{player.nickname} <img src={flags[region]} alt=""/></PlayerName>
                   <PlayerMessage>{player.message}</PlayerMessage>
                 </Player>
               );
@@ -208,7 +213,7 @@ const PlayerList = () => {
                     <Selection style={{ visibility: 'hidden'}}>Your selection</Selection>
                     <PlayerAvatar onClick={() => selectPlayer(player.nickname, player.country, index)} src={player.avatarUrl}/>
                   </AvatarContainer>
-                  <PlayerName>{player.nickname} <img src={tw} alt=""/></PlayerName>
+                  <PlayerName>{player.nickname} <img src={flags[region]} alt=""/></PlayerName>
                   <PlayerMessage>{player.message}</PlayerMessage>
                 </Player>
               );
@@ -221,7 +226,6 @@ const PlayerList = () => {
  
   return (
     <>
-      <p>You are logged in as: {user.status}  {endVotingButton}</p>
       {playerList}
     </> 
   );

@@ -10,10 +10,10 @@ export const UserButtons = () => {
   }
   
   return (
-    <>
+    <div style={{margin: '20px 0'}}>
       <Button onClick={changeUser} value='visitor'>Visitor</Button>
       <Button onClick={changeUser} value='user'>User</Button>
       <Button onClick={changeUser} value='admin'>Admin</Button>
-    </>
+    </div>
   )
 }
