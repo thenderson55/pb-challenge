@@ -13,6 +13,7 @@ export const RegionButtons = () => {
     flex-direction: row;
     justify-content: space-evenly;
     text-align: center;
+    margin-top: 7px;
   `;
 
   function clickHandler(e) {

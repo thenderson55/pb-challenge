@@ -16,29 +16,47 @@ const RegionSelection = () => {
           : "Vote for players to represent your region"}"
     }
   `;
+
   const SelectionText = styled.p`
+    margin-bottom: ${() => endVoting ? '20px' : '5px'};
+  `;
+
+  const Note = styled.span`
+    margin-bottom: 10px;
     &::before{
       content: "${() =>
         endVoting
-          ? "Select your region to browse players."
-          : "Select your region to browse players. NOTE : You may only vote for one region."}"
+          ? null
+          : `NOTE : You may only vote for one region.`}";
     }
   `;
+
   const VotingText = styled.p`
     &::before{
       content: "${() =>
         endVoting
           ? `The top three vote earners in each region make up that region's team`
-          : `Click on up to three players to place your votes. (${voteCount} votes remaining)`}"
+          : `Click on up to three players to place your votes.`}"
+    }
+  `;
+  
+  const VoteCount = styled.span`
+    color: #adb5bd;
+    &::before{
+      content: "${() =>
+        endVoting
+          ? null
+          : `(${voteCount} votes remaining)`}"
     }
   `;
 
   return (
     <>
       <RegionHeader />
-      <SelectionText />
+      <SelectionText>Select your region to browse players.</SelectionText>
+      <Note/>
       <RegionButtons />
-      <VotingText />
+      <VotingText> <VoteCount></VoteCount> </VotingText>
     </>
   );
 };
