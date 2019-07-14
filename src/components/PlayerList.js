@@ -122,10 +122,11 @@ const PlayerList = () => {
       const newVotedList = votedList.filter(item => item !== index)
       dispatch({ type: "UPDATE_VOTEDLIST", payload: newVotedList });
       players.forEach(player => {
-      // Decrease players vote count
+      // Decrease player's vote count
       if(player.nickname === nickname){
           player.votes = player.votes - 1
         }
+        dispatch({ type: "CHANGE_PLAYERS_VOTES", payload: players });
         // Decrease total regional vote count   
         setVotes({ ...votes,
           [region]: votes[region] - 1
@@ -133,7 +134,7 @@ const PlayerList = () => {
       })
       return;
     } 
-    // Check user doen't have more than three votes
+    // Check user doesn't have more than three votes
     if(user.votes.length === 3 ){
       alert("You have already voted for three people")
       return;
@@ -146,12 +147,11 @@ const PlayerList = () => {
     // Add voted player to votes array
     user.votes.push({nickname: nickname, country: country})
     dispatch({ type: "ADD_PLAYER_VOTE", payload: user.votes });
-    // Increase players vote count
+    // Increase player's vote count
     players.forEach(player => {
       if(player.nickname === nickname){
         player.votes = player.votes + 1 || 1
-        dispatch({ type: "INCREASE_PLAYERS_VOTE", payload: players });
-        console.log(player.votes)
+        dispatch({ type: "CHANGE_PLAYERS_VOTES", payload: players });
         // Increase total regional vote count 
         setVotes({ ...votes,
           [region]: votes[region] + player.votes

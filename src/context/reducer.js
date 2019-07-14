@@ -30,7 +30,7 @@ export const reducer = (state, action) => {
         ...state,
         user: { ...state.user, votes: action.payload }
       };
-    case "INCREASE_PLAYERS_VOTE":
+    case "CHANGE_PLAYERS_VOTES":
       return {
         ...state,
         players: action.payload 
