@@ -1,4 +1,8 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An voting app practicing React Hooks/Context/Styled Components
+
+https://cc-scrivnr.herokuapp.com
+
+Buttons at the bottom to change user status
 
 ## Available Scripts
 
