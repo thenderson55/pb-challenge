@@ -1,6 +1,6 @@
-An voting app practicing React Hooks/Context/Styled Components
+A voting app practicing React Hooks/Context/Styled Components
 
-https://cc-scrivnr.herokuapp.com
+https://pb-challenge.herokuapp.com/
 
 Buttons at the bottom to change user status
 
